@@ -1,0 +1,38 @@
+version: "3.7"
+
+networks:
+  pocauth:
+    name: pocauth
+    driver: bridge
+    external: true
+
+services:
+  servicea:
+    container_name: servicea
+    build: ./serviceA
+    image: servicea
+    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 5000
+    ports:
+      - 5000:5000
+    networks:
+      - pocauth
+
+  serviceb:
+    container_name: serviceb
+    build: ./serviceB
+    image: serviceb
+    entrypoint: [ "python", "generate_token.py" ]
+    ports:
+      - 7000:7000
+    networks:
+      - pocauth
+
+  authapi:
+    container_name: authapi
+    build: ./auth-api
+    image: authapi
+    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 1000
+    ports:
+      - 1000:1000
+    networks:
+      - pocauth
