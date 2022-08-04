@@ -18,12 +18,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class User(BaseModel):
     username: str
     password: str
 
 
-@app.post('/api/v1/token')
+class Service(BaseModel):
+    client_id: str
+    client_secret: str
+
+
+@app.post('/api/v1/token/user')
 def gen_token(user: User):
     try:
         endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
@@ -37,6 +43,21 @@ def gen_token(user: User):
         response.raise_for_status()
         return response.json()
 
+    except Exception as error:
+        return {"data": str(error)}, 400
+
+
+@app.post('/api/v1/token/service')
+def gen_client_token(service: Service):
+    try:
+        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
+        body = {
+            'grant_type': 'client_credentials',
+        }
+        body.update(service)
+        response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+        response.raise_for_status()
+        return response.json()
     except Exception as error:
         return {"data": str(error)}, 400
 
