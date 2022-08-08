@@ -19,24 +19,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class UserRequest(BaseModel):
     username: str
     password: str
     client_id: str
     client_secret: str
-    grant_type: str
 
 class ServiceRequest(BaseModel):
     client_id: str
     client_secret: str
-    grant_type: str
 
 
 @app.post('/api/v1/token/user')
-def gen_token(body: UserRequest):
+def gen_token(user: UserRequest):
     try:
-        realm = 'pocauth'
-        endpoint = f'http://keycloak:8080/realms/{realm}/protocol/openid-connect/token'
+        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
+        body = {
+            "grant_type": "password"
+        }
+        body.update(user)
         response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         response.raise_for_status()
         return response.json()
@@ -46,10 +48,13 @@ def gen_token(body: UserRequest):
 
 
 @app.post('/api/v1/token/service')
-def gen_client_token(body: ServiceRequest):
+def gen_client_token(service: ServiceRequest):
     try:
-        realm = 'pocauth'
-        endpoint = f'http://keycloak:8080/realms/{realm}/protocol/openid-connect/token'
+        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
+        body = {
+            "grant_type": "client_credentials"
+        }
+        body.update(service)
         response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         response.raise_for_status()
         return response.json()
