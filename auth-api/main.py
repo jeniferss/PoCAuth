@@ -1,3 +1,4 @@
+from http import client
 import requests
 import uvicorn
 from fastapi import FastAPI
@@ -18,27 +19,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-class User(BaseModel):
+class UserRequest(BaseModel):
     username: str
     password: str
-
-
-class Service(BaseModel):
     client_id: str
     client_secret: str
+    grant_type: str
+
+class ServiceRequest(BaseModel):
+    client_id: str
+    client_secret: str
+    grant_type: str
 
 
 @app.post('/api/v1/token/user')
-def gen_token(user: User):
+def gen_token(body: UserRequest):
     try:
-        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
-        body = {
-            'grant_type': 'password',
-            'client_id': 'kong',
-            'client_secret': 'WTlikgf93hmucV1AkCEsqntLU18lAepP'
-        }
-        body.update(user)
+        realm = 'pocauth'
+        endpoint = f'http://keycloak:8080/realms/{realm}/protocol/openid-connect/token'
         response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         response.raise_for_status()
         return response.json()
@@ -48,13 +46,10 @@ def gen_token(user: User):
 
 
 @app.post('/api/v1/token/service')
-def gen_client_token(service: Service):
+def gen_client_token(body: ServiceRequest):
     try:
-        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
-        body = {
-            'grant_type': 'client_credentials',
-        }
-        body.update(service)
+        realm = 'pocauth'
+        endpoint = f'http://keycloak:8080/realms/{realm}/protocol/openid-connect/token'
         response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         response.raise_for_status()
         return response.json()

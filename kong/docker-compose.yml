@@ -96,7 +96,7 @@ services:
   konga:
     container_name: konga
     image: pantsel/konga:latest
-    restart: on-failure
+    restart: always
     networks:
       - pocauth
     environment:

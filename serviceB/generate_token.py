@@ -6,7 +6,6 @@ try:
     consumer = os.getenv('CONSUMER', 'CONSUMER')
     endpoint = f'http://kong:8001/consumers/{consumer}/jwt'
     response = requests.get(url=endpoint).json()
-    print(response)
     key = response['data'][0]['key']
     secret = response['data'][0]['secret']
     
