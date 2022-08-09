@@ -1,3 +1,4 @@
+from http import client
 import requests
 import uvicorn
 from fastapi import FastAPI
@@ -18,25 +19,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class User(BaseModel):
+
+class UserRequest(BaseModel):
     username: str
     password: str
+    client_id: str
+    client_secret: str
+
+class ServiceRequest(BaseModel):
+    client_id: str
+    client_secret: str
 
 
-@app.post('/api/v1/token')
-def gen_token(user: User):
+@app.post('/api/v1/token/user')
+def gen_token(user: UserRequest):
     try:
         endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
         body = {
-            'grant_type': 'password',
-            'client_id': 'kong',
-            'client_secret': 'WTlikgf93hmucV1AkCEsqntLU18lAepP'
+            "grant_type": "password"
         }
         body.update(user)
         response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         response.raise_for_status()
         return response.json()
 
+    except Exception as error:
+        return {"data": str(error)}, 400
+
+
+@app.post('/api/v1/token/service')
+def gen_client_token(service: ServiceRequest):
+    try:
+        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
+        body = {
+            "grant_type": "client_credentials"
+        }
+        body.update(service)
+        response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+        response.raise_for_status()
+        return response.json()
     except Exception as error:
         return {"data": str(error)}, 400
 
