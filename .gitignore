@@ -38,4 +38,4 @@ venv.bak/
 .idea/
 
 # Login Page
-.login-page/
+login-page/
