@@ -36,3 +36,25 @@ services:
       - grafana_data:/var/lib/grafana
     ports:
       - 3030:3000
+  
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - "./loki-config.yaml:/etc/loki/local-config.yaml"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - pocauth
+
+  promtail:
+    image: grafana/promtail
+    container_name: promtail
+    volumes:
+      - "./promtail-config.yaml:/etc/promtail/config.yml"
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - pocauth
