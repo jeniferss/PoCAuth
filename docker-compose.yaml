@@ -7,6 +7,16 @@ networks:
     external: true
 
 services:
+  authapi:
+    container_name: authapi
+    build: ./auth-api
+    image: authapi
+    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 1000
+    ports:
+      - 1000:1000
+    networks:
+      - pocauth
+
   servicea:
     container_name: servicea
     build: ./serviceA
@@ -24,15 +34,5 @@ services:
     entrypoint: [ "python", "generate_token.py" ]
     ports:
       - 7000:7000
-    networks:
-      - pocauth
-
-  authapi:
-    container_name: authapi
-    build: ./auth-api
-    image: authapi
-    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 1000
-    ports:
-      - 1000:1000
     networks:
       - pocauth

@@ -3,6 +3,9 @@ import os
 import requests
 import uvicorn
 from fastapi import FastAPI
+from starlette.responses import JSONResponse
+
+import settings as cf
 
 app = FastAPI()
 
@@ -10,13 +13,13 @@ app = FastAPI()
 @app.get('/api/v1/callServiceA')
 def get_articles():
     try:
-        endpoint = 'http://kong:8000/api/v1/articles'
+        endpoint = f'{cf.HOST}/api/v1/articles'
         token = os.getenv('TOKEN', None)
         response = requests.get(url=endpoint, headers={'Authorization': token})
         response.raise_for_status()
-        return {"data": response.json()}
+        return JSONResponse(content=response.json(), status_code=200)
     except Exception as error:
-        return {"data": str(error)}
+        return JSONResponse(content={"error": str(error)}, status_code=400)
 
 
 if __name__ == "__main__":

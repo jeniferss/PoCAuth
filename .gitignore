@@ -39,3 +39,7 @@ venv.bak/
 
 # Login Page
 login-page/
+
+# Settings
+auth-api/settings.py
+serviceB/settings.py

@@ -1,11 +1,13 @@
-from http import client
-import requests
 import uvicorn
 from fastapi import FastAPI
+from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from keycloak_connector import KeycloakConnector
+
 app = FastAPI()
+keycloak_connector = KeycloakConnector()
 
 origins = [
     "http://localhost:3000",
@@ -23,8 +25,7 @@ app.add_middleware(
 class UserRequest(BaseModel):
     username: str
     password: str
-    client_id: str
-    client_secret: str
+
 
 class ServiceRequest(BaseModel):
     client_id: str
@@ -34,32 +35,19 @@ class ServiceRequest(BaseModel):
 @app.post('/api/v1/token/user')
 def gen_token(user: UserRequest):
     try:
-        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
-        body = {
-            "grant_type": "password"
-        }
-        body.update(user)
-        response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-        response.raise_for_status()
-        return response.json()
-
+        content = keycloak_connector.generate_user_token(user)
+        return JSONResponse(content=content, status_code=200)
     except Exception as error:
-        return {"data": str(error)}, 400
+        return JSONResponse(content={"error": str(error)}, status_code=400)
 
 
 @app.post('/api/v1/token/service')
 def gen_client_token(service: ServiceRequest):
     try:
-        endpoint = 'http://keycloak:8080/realms/pocauth/protocol/openid-connect/token'
-        body = {
-            "grant_type": "client_credentials"
-        }
-        body.update(service)
-        response = requests.post(url=endpoint, data=body, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-        response.raise_for_status()
-        return response.json()
+        content = keycloak_connector.generate_service_token(service)
+        return JSONResponse(content=content, status_code=200)
     except Exception as error:
-        return {"data": str(error)}, 400
+        return JSONResponse(content={"error": str(error)}, status_code=400)
 
 
 if __name__ == "__main__":

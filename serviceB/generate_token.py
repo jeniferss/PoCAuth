@@ -1,19 +1,21 @@
-import jwt
-import requests
 import os
+import logging
+
+import requests
+
+import settings as cf
 
 try:
-    consumer = os.getenv('CONSUMER', 'CONSUMER')
-    endpoint = f'http://kong:8001/consumers/{consumer}/jwt'
-    response = requests.get(url=endpoint).json()
-    key = response['data'][0]['key']
-    secret = response['data'][0]['secret']
-    
-    TOKEN = jwt.encode(payload={'iss': key}, key=secret, algorithm='HS256', headers={"typ": "JWT", "alg": "HS256"})
-    TOKEN = f'Bearer {TOKEN}'
+    body = {"client_id": cf.SERVICE_ID, "client_secret": cf.SERVICE_SECRET}
+    url = f'{cf.HOST}/api/v1/token/service'
+    response = requests.post(url=url, json=body)
+    response.raise_for_status()
+    response = response.json()
+    ACCESS = response['access_token']
+    TOKEN = f'Bearer {ACCESS}'
     os.environ['TOKEN'] = TOKEN
 
 except Exception as error:
-    print(f'Wrong consumer id. Error: {error}')
+    logging.error(f'Error while generating token. Error: {str(error)}')
 
 os.system('uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 7000')
