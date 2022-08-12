@@ -38,4 +38,8 @@ venv.bak/
 .idea/
 
 # Login Page
-.login-page/
+login-page/
+
+# Settings
+auth-api/settings.py
+serviceB/settings.py

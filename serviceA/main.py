@@ -1,6 +1,7 @@
 import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 app = FastAPI()
 
@@ -25,7 +26,7 @@ articles = [
 
 @app.get('/api/v1/articles')
 def get_articles():
-    return {"articles": articles}
+    return JSONResponse(content={"articles": articles}, status_code=200)
 
 
 if __name__ == "__main__":

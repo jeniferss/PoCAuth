@@ -1,0 +1,60 @@
+version: '3'
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+networks:
+  pocauth:
+    external: true
+
+services:
+
+  prometheus:
+    container_name: prometheus
+    hostname: prometheus
+    image: prom/prometheus
+    networks:
+      - pocauth
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    image: grafana/grafana
+    networks:
+      - pocauth
+    volumes:
+      - ./grafana_datasources.yml:/etc/grafana/provisioning/datasources/all.yaml
+      - ./grafana_config.ini:/etc/grafana/config.ini
+      - grafana_data:/var/lib/grafana
+    ports:
+      - 3030:3000
+  
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - "./loki-config.yaml:/etc/loki/local-config.yaml"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - pocauth
+
+  promtail:
+    image: grafana/promtail
+    container_name: promtail
+    volumes:
+      - "./promtail-config.yaml:/etc/promtail/config.yml"
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - pocauth
