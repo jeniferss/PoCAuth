@@ -1,6 +1,5 @@
 import os
 import logging
-
 import requests
 
 import settings as cf
@@ -12,8 +11,7 @@ try:
     response.raise_for_status()
     response = response.json()
     ACCESS = response['access_token']
-    TOKEN = f'Bearer {ACCESS}'
-    os.environ['TOKEN'] = TOKEN
+    os.environ['TOKEN'] = f'Bearer {ACCESS}'
 
 except Exception as error:
     logging.error(f'Error while generating token. Error: {str(error)}')

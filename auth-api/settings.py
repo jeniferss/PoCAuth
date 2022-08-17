@@ -1,4 +1,4 @@
-from vault_connector import get_credentials
+from utils.vault_connector import get_credentials
 
 CREDENTIALS = get_credentials(path='credentials')
 

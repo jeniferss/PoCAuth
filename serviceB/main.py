@@ -10,11 +10,11 @@ import settings as cf
 app = FastAPI()
 
 
-@app.get('/api/v1/callServiceA')
+@app.get('/api/v1/articles')
 def get_articles():
     try:
         endpoint = f'{cf.HOST}/api/v1/articles'
-        token = os.getenv('TOKEN', None)
+        token = os.getenv('TOKEN')
         response = requests.get(url=endpoint, headers={'Authorization': token})
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=200)

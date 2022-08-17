@@ -31,7 +31,7 @@ services:
     container_name: serviceb
     build: ./serviceB
     image: serviceb
-    entrypoint: [ "python", "generate_token.py" ]
+    entrypoint: [ "python", "startup.py" ]
     ports:
       - "7000:7000"
     networks:
