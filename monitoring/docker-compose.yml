@@ -22,7 +22,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - 9090:9090
+      - "9090:9090"
 
   grafana:
     container_name: grafana
@@ -35,7 +35,7 @@ services:
       - ./grafana_config.ini:/etc/grafana/config.ini
       - grafana_data:/var/lib/grafana
     ports:
-      - 3030:3000
+      - "3030:3000"
   
   loki:
     image: grafana/loki

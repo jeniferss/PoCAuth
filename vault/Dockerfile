@@ -19,9 +19,6 @@ RUN wget --quiet --output-document=/tmp/vault.zip https://releases.hashicorp.com
     rm -f /tmp/vault.zip && \
     chmod +x /vault
 
-# update PATH
-ENV PATH="PATH=$PATH:$PWD/vault"
-
 # add the config file
 COPY ./config/vault-config.json /vault/config/vault-config.json
 

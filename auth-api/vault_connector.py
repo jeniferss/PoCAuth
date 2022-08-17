@@ -8,7 +8,6 @@ credentials = {}
 
 
 def get_credentials(path: str):
-
     token = os.getenv('VTOKEN')
     if not token: raise EnvironmentError(f'VTOKEN not declared.')
 
