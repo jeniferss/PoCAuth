@@ -3,6 +3,8 @@ services:
   vaultserver:
     container_name: vaultserver
     image: vault:latest
+    cap_add:
+      - IPC_LOCK
     ports:
       - "8200:8200"
     environment:
