@@ -1,0 +1,26 @@
+[
+    {
+        "author": {
+            "firstName": "FirstNameOne",
+            "lastName": "LastNameOne"
+        },
+        "title": "TitleOne",
+        "publicationYear": 2020
+    },
+    {
+        "author": {
+            "firstName": "FirstNameTwo",
+            "lastName": "LastNameTwo"
+        },
+        "title": "TitleTwo",
+        "publicationYear": 2021
+    },
+    {
+        "author": {
+            "firstName": "FirstNameThree",
+            "lastName": "LastNameThree"
+        },
+        "title": "TitleThree",
+        "publicationYear": 2022
+    }
+]

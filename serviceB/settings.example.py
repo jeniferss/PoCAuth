@@ -1,4 +1,0 @@
-HOST = ''
-
-SERVICE_ID = ''
-SERVICE_SECRET = ''

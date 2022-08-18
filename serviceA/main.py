@@ -1,3 +1,5 @@
+import json
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,16 +19,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-articles = [
-    {"author": "AuthorOne", "title": "TitleOne", "publicationYear": 2020},
-    {"author": "AuthorTwo", "title": "TitleTwo", "publicationYear": 2021},
-    {"author": "AuthorThree", "title": "TitleThree", "publicationYear": 2022},
-]
-
 
 @app.get('/api/v1/articles')
 def get_articles():
-    return JSONResponse(content={"articles": articles}, status_code=200)
+    with open(file="data.json", mode='rb') as file:
+        data = json.load(file)
+    return JSONResponse(content=data, status_code=200)
 
 
 if __name__ == "__main__":

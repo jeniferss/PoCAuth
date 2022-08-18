@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  vaultserver:
+    container_name: vaultserver
+    image: vault:latest
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    networks:
+      - pocauth
+
+networks:
+  pocauth:
+    external: true
