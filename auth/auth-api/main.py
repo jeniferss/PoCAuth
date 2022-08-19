@@ -11,6 +11,8 @@ keycloak_connector = KeycloakConnector()
 
 origins = [
     "http://localhost:3000",
+    "http://server.one:3001",
+    "http://server.two:3002",
 ]
 
 app.add_middleware(

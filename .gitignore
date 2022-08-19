@@ -37,5 +37,5 @@ venv.bak/
 # PyCharm
 .idea/
 
-# Login Page
-login-page/
+# Logins
+logins/
