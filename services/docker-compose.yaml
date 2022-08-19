@@ -7,19 +7,9 @@ networks:
     external: true
 
 services:
-  authapi:
-    container_name: authapi
-    build: ./auth-api
-    image: authapi
-    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 1000
-    ports:
-      - "1000:1000"
-    networks:
-      - pocauth
-
   servicea:
     container_name: servicea
-    build: ./serviceA
+    build: ./python/serviceA
     image: servicea
     command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 5000
     ports:
@@ -29,7 +19,7 @@ services:
 
   serviceb:
     container_name: serviceb
-    build: ./serviceB
+    build: ./python/ServiceB
     image: serviceb
     entrypoint: [ "python", "startup.py" ]
     ports:
