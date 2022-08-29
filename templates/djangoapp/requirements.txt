@@ -1,0 +1,11 @@
+django
+djangorestframework
+djangorestframework_simplejwt
+psycopg2
+requests
+django-cors-headers
+django-storages
+reportlab
+hvac
+PyJWT
+pytz

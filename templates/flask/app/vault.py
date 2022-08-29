@@ -2,6 +2,8 @@ from hvac import Client
 from hvac.exceptions import Unauthorized
 import os
 
+from app.db_connector import logger
+
 credentials = {}
 
 
@@ -14,10 +16,9 @@ def get_credentials(path):
         if not env: error.append('ENV')
         if not token: error.append('VAULT_TOKEN')
 
-        if error:
-            raise EnvironmentError(f'environment variables {error} not declared')
+        if error: raise EnvironmentError(f'environment variables {error} not declared')
 
-        print(f'Consultando path "{path}" no Vault. Ambiente "{env}"')
+        logger.debug(f'Consultando path "{path}" no Vault. Ambiente "{env}"')
         vault_host = os.getenv('VAULT_HOST')
         client = Client(vault_host, token)
 
