@@ -1,0 +1,10 @@
+flask
+flask-sqlalchemy
+flask-marshmallow
+marshmallow-sqlalchemy
+psycopg2
+pyJWT
+pytz
+requests
+hvac
+Flask-Migrate
