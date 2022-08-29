@@ -1,30 +1,48 @@
-const { createLogger, format, transports } = require('winston');
+import { createLogger, format, transports, addColors } from 'winston';
 const { combine, timestamp, printf } = format;
+import { ILogger } from 'src/interfaces/ILogger';
 
-const COLOR: any = {
-  debug: '\x1b[1;38m',
-  info: '\x1b[1;34m',
-  error: '\x1b[1;31m',
-  warn: '\x1b[1;33m',
-  critical: '\x1b[1;41m',
+const colorizer = format.colorize();
+
+const logLevels = {
+  levels: {
+    error: 0,
+    warn: 1,
+    info: 2,
+    http: 3,
+    debug: 4,
+  },
+  colors: {
+    error: 'red',
+    warn: 'yellow',
+    info: 'green',
+    http: 'magenta',
+    debug: 'blue',
+  },
 };
+
+addColors(logLevels.colors);
 
 const logger = createLogger({
   format: combine(
-    format.align(),
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    printf(
-      (info: any) =>
-        `${COLOR[info.level]}${info.level.toUpperCase()}\x1b[0m | ${
-          info.timestamp
-        } : ${info.message}`,
-    ),
+    printf((info: ILogger) => {
+      const { timestamp, level, message, data, status } = info;
+
+      return colorizer.colorize(
+        level,
+        `[${level.toUpperCase()}] ${
+          status ? `| [STATUSCODE ${status}]` : ''
+        } | [${timestamp}] | ${message} ${
+          data ? `| ${JSON.stringify(data)}` : ''
+        }`,
+      );
+    }),
   ),
+  levels: logLevels.levels,
   transports: [
     new transports.Console({
-      prettyPrint: true,
-      colorize: true,
-      timestamp: true,
+      level: 'debug',
     }),
   ],
 });
