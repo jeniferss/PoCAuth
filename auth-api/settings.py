@@ -1,6 +1,6 @@
-from utils.vault_connector import get_credentials
+from connectors.vault_connector import get_credentials
 
-CREDENTIALS = get_credentials(path='credentials')
+CREDENTIALS = get_credentials(path='credentials', mountpoint='pocauth')
 
 KEYCLOAK_HOST = CREDENTIALS['keycloakHost']
 KEYCLOAK_REALM = CREDENTIALS['keycloakRealm']

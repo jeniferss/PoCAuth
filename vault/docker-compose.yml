@@ -1,4 +1,9 @@
 version: "3.8"
+
+networks:
+  pocauth:
+    external: true
+
 services:
   vaultserver:
     container_name: vaultserver
@@ -8,10 +13,7 @@ services:
     ports:
       - "8200:8200"
     environment:
-      VAULT_ADDR: "http://0.0.0.0:8200"
+      VAULT_ADDR: $VAULT_ADDR
+      VAULT_DEV_ROOT_TOKEN_ID: $VAULT_DEV_TOKEN
     networks:
       - pocauth
-
-networks:
-  pocauth:
-    external: true

@@ -4,8 +4,10 @@
 ***
 1. [Technologies](#technologies)
 2. [Installation](#installation)
-3. [Setting up Kong, Konga and Keycloak](#auth-services-set-up)
-4. [Setting up Local Microservices](#microservices-set-up)
+3. [Running Containers](#running-containers)
+3. [Configuration](#configuration)
+4. [Testing Endpoints](#testing-endpoints)
+5. [Same Route for Different Clients](#same-route-for-different-clients)
 
 
 ## Technologies
@@ -18,6 +20,11 @@ A list of technologies used within the project:
 * [Kong Image](https://hub.docker.com/_/kong): Latest Version 
 * [Konga Image](https://hub.docker.com/r/pantsel/konga): Latest Version
 * [Keycloak Image](quay.io/repository/keycloak/keycloak): Version 17.0.0
+* Prometheus Image: Latest Version
+* [Grafana Image](https://hub.docker.com/r/grafana/grafana): Latest Version
+* [Loki Image](https://hub.docker.com/r/grafana/loki): Latest Version
+* [Promtail Image](https://hub.docker.com/r/grafana/promtail): Latest Version
+* [Vault Image](https://hub.docker.com/_/vault): Latest Version
 * [Kong OIDC Plugin](https://github.com/nokia/kong-oidc)
 * [Lua Resty JWT Plugin](https://github.com/SkyLothar/lua-resty-jwt)
 * [Kong JWT Keycloak Plugin](https://github.com/BGaunitz/kong-plugin-jwt-keycloak)
@@ -25,86 +32,176 @@ A list of technologies used within the project:
 
 ## Installation
 ***
-A little intro about the installation. 
+ 
 ```bash
-$ git clone https://example.com
+$ git clone git@github.com:jeniferss/pocauth.git
 ```
 
-## Auth Services Set Up
+## Running Containers
 ***
-Run this repo from your command line.
-```bash
-$ cd kong
-$ docker compose up --build
 
+### Kong & Konga
+```bash
 # Konga admin panel will start at: http://localhost:1337
-# Keycloak admin panel will start at: http://localhost:8180
 # Kong admin api will start at: http://localhost:8001
 # Kong services api will start at: http://localhost:8000
+
+$ cd kong
+$ docker-compose --env-file .env up --build
 ```
 
-### Konga Configuration
-1. Create an Admin user
-2. Login with admin user credentials
-3. Create a connection with kong (for 'kong admin url' parameter use: http://kong:8001)
-
-### Microservices Set Up
-Run this repo from your command line.
+### Keycloak
 ```bash
-$ docker compose up --build
+# Keycloak admin panel will start at: http://localhost:8180
 
-# ServiceA will start at: http://localhost:5000
-# ServiceB will start at: http://localhost:7000
-# auth-api will start at: http://localhost:1000
+$ cd keycloak
+$ docker-compose --env-file .env up --build
+```
+### Vault
+```bash
+# Keycloak admin panel will start at: http://localhost:8200
+
+$ cd vault
+$ docker-compose --env-file .env up --build
 ```
 
-4. Go to Services Page > Add new Service 
-5. Set host and name to servicea and port to 5000 > Submit Service
-6. Click on servicea link > Go to routes > Add Route
-7. Set name field to articles
-8. Set paths field to /api/v1/articles
-9. Set strip path to no and preserve host to yes > Submit Route
+### Grafana & Prometheus
+```bash
+# Grafana admin panel will start at: http://localhost:3030
+# Loki api will start at: http://localhost:3100
+# Prometheus api will start at: http://localhost:9090
+
+$ cd monitoring
+$ docker-compose --env-file .env up --build
+```
+
+### Auth API
+```bash
+# Auth api will start at: http://localhost:1000
+
+$ cd auth-api
+$ docker-compose --env-file .env up --build
+```
+
+### ServiceA & ServiceB
+```bash
+# ServiceA will start at: http://localhost:5000
+$ cd serviceA
+$ docker-compose up --build
+
+# ServiceB will start at: http://localhost:7000
+$ cd serviceB
+$ docker-compose --env-file .env up --build
+```
+
+## Configuration
+***
+### Konga & Kong 
+1. Create connection:
+* Register an admin user > Login with admin user credentials > Setup a connection to kong (for 'kong admin url' parameter use: http://kong:8001)
+
+2. Register Services: Go to services page > Add new service 
+* Auth-api: Set host and name to authapi and port to 1000 > Submit Service
+* ServiceA: Set host and name to servicea and port to 5000 > Submit Service
+* ServiceB: Set host and name to serviceb and port to 7000 > Submit Service
+
+3. Register Routes:
+
+* Auth-api (userToken): Click on authapi link > Go to routes > Add Route > Set name field to userToken > Set paths field to /api/v1/token/user > Set strip path to no and preserve host to yes > Submit Route
+
+* Auth-api (serviceToken): Click on authapi link > Go to routes > Add Route > Set name field to serviceToken > Set paths field to /api/v1/token/service > Set strip path to no and preserve host to yes > Submit Route
+
+* ServiceA (articles): Click on servicea link > Go to routes > Add Route > Set name field to articlesA > Set paths field to /api/v1/articles > Set strip path to no and preserve host to yes > Submit Route
+
+* ServiceB (articles): Click on serviceb link > Go to routes > Add Route > Set name field to articlesB > Set paths field to /api/v1/articles > Set strip path to no and preserve host to yes > Submit Route
+
+** Both services were configured to have the same routes to test clients routing (for example, ClientA will call ServiceA routes and ClientB will call ServiceB routes)
 
 ### Keycloak Configuration
-1. Click on 'Administration Console'
-2. Login with default credentials (username and password are 'admin')
-3. Create a new Realm 
-4. Go to 'Clients' > 'Create'
-5. Create a client with Client Id: kong and Root URL: http://localhost:8000
-6. In Settings page, set Access Type to 'confidential' and save it
-7. Go to Credentials page and copy the Secret value (set secrete to client_secret value on main.py for servicea)
-8. Create a new client, but with Access Type 'public'
-9. Go to Users page > Add User > Set email verified to On
-10. Go to Credentials > Create a new password, with temporary field off
-11. Go to Roles page > Add Role > Set a role name (we used 'reader')
-12. Go to Users page > iew All Users > Edit > Role Mappings > Add reader role to user
-13. Go to Konga panel
+1. Configure admin panel:
+* Click on 'Administration Console' > Login with default credentials (username and password are 'admin') > Add a new Realm 
 
-### Plugins Configuration (Konga)
-1. Go to plugins > Add Global Plugins > Other > Oidc > Add Plugin
-2. Set the client secret field with the value that was copied 
-3. Set Bearer Only field to yes
-4. Set Client Id Field to kong
-5. Set Introspection Endpoint field to 'http://keycloak:8080/realms/${REALM}/protocol/openid-connect/token/introspect'
-6. Set Discovery field to 'http://keycloak:8080/auth/realms/${REALM}/.well-known/openid-configuration'
-7. Go to Services page > servicea > plugins > add plugin > other > JWT Keycloak
-8. Set realm roles to reader and allowed iss to 'http://keycloak:8080/realms/${REALM}'
+2. Register clients:
+* Kong: Go to clients page > Create > set Client Id to kong and Root URL: http://localhost:8000 > Settings page, set Access Type to 'confidential' and save it > Go to Credentials page and copy the Secret value 
 
-### Test
-1. Generate a JWT:
-```bash
-$ curl --location --request POST 'http://localhost:1000/api/v1/token' \
-        --header 'Content-Type: application/json' \
-        --data-raw '{
-            "username": "username",
-            "password": "password"
-        }'
+* ServiceB: Go to clients page > Create > set Client Id to serviceb and Root URL: http://localhost:7000 > Settings page, set Access Type to 'confidential', disable 'Standard Flow Enabled', enable 'Service Account Enabled' and save it > Go to Credentials page and copy the Secret value 
+
+* Auth API: Go to clients page > Create > set Client Id to authapi and Root URL: http://localhost:1000  
+
+3. Register users: Go to users page > Add user > Set email verified to on > Go to credentials > Set a new password, with temporary field off
+
+### Vault configuration
+1. Create Secrets: Login with root token > Enable new engine > Choose kv type > Set path to pocauth (this will be the mountpoint in the service code) > Create secret > Set path to credentials > Enable JSON > Copy and paste the following JSON object, make sure to change the values for the secrets (kong and serviceb) and save it
+
 ```
-2. Call articles API:
+{
+  "kongHost": "http://kong:8000",
+  "keycloakHost": "http://keycloak:8080",
+
+  "keycloakRealm": "pocauth",
+
+  "servicebId": "serviceB",
+  "kongServiceId": "kong",
+
+  "kongServiceSecret": "",
+  "servicebSecret": ""
+}
+
+```
+
+### Kong Plugins Configuration 
+1. Monitoring Plugin: Go to plugins > Add Global Plugins > Analytics & Monitoring > Prometheus > Add Plugin
+
+2. Authentication Pluging:
+* OIDC: Go to plugins > Add Global Plugins > Other > Oidc > Add Plugin > Set the client secret field with the value that was generated to kong on keycloak > Set Bearer Only field to yes > Set Client Id Field to kong > Set Introspection Endpoint field to 'http://keycloak:8080/realms/${REALM}/protocol/openid-connect/token/introspect' > Set Discovery field to 'http://keycloak:8080/auth/realms/${REALM}/.well-known/openid-configuration'
+
+* JWT Keycloak: Go to Services page > the service or route that needs permission > plugins > add plugin > other > JWT Keycloak > Configure the roles for that route > Set allowed iss to 'http://keycloak:8080/realms/${REALM}'
+
+3. Allow Frontend Apps: Go to plugins > Add Global Plugins > Security > Cors > Add the origins for your clients (usually http://localhost:3000) or * to allow all
+
+4. VPN Configuration (Kong Inside VPN): Go to plugins > Add Global Plugins > Security > Ip Restriction > Set the CIDR notation that fits the ip range to allow field
+
+## Testing Endpoints
+***
+1. Service Token:
+```bash
+$ curl --location --request POST 'http://localhost:8000/api/v1/token/service' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "client_id": "",
+    "client_secret": ""
+}'
+```
+
+2. User Token:
+```bash
+$ curl --location --request POST 'http://localhost:8000/api/v1/token/user' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "",
+    "password": ""
+}'
+```
+
+2. Call articles API (won't work unless made with client app):
 ```bash
 $ curl --location --request GET 'http://localhost:8000/api/v1/articles' \
---header 'Authorization: Bearer JWTVALUE'
+--header 'Authorization: Bearer eyJhb...'
 ```
 
-### Front Integration
-1. Add http://localhost:3000 to CORS plugin
+## Same Route for Different Clients
+***
+
+1. Create new domain locally (Windows): Go to C:\WINDOWS\system32/drivers/etc/hosts > add the following lines to the file and save it
+
+```
+192.168.15.37 server.one
+192.168.15.37 server.two
+```
+
+2. Set hosts to routes: 
+* ServiceA: Go to Routes > articlesA > set hosts to kong and server.one > Submit changes
+
+* ServiceB: Go to Routes > articlesB > set hosts to server.two > Submit changes
+
+* Auth API: Go to Routes > serviceToken and userToken > set hosts to kong, server.one and server.two > Submit changes

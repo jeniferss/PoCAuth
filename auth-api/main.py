@@ -4,7 +4,8 @@ from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from utils.keycloak_connector import KeycloakConnector
+from connectors.keycloak_connector import KeycloakConnector
+
 
 app = FastAPI()
 keycloak_connector = KeycloakConnector()

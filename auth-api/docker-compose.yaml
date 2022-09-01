@@ -1,0 +1,22 @@
+version: "3.7"
+
+networks:
+  pocauth:
+    name: pocauth
+    driver: bridge
+    external: true
+
+services: 
+  authapi:
+    container_name: authapi
+    build: .
+    image: authapi
+    environment:
+      - VAULTTOKEN=$VAULTTOKEN
+      - VAULTSERVER=$VAULTSERVER
+    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 1000
+    ports:
+      - "1000:1000"
+    networks:
+      - pocauth
+  

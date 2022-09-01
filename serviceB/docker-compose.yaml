@@ -1,0 +1,21 @@
+version: "3.7"
+
+networks:
+  pocauth:
+    name: pocauth
+    driver: bridge
+    external: true
+
+services:
+  serviceb:
+    container_name: serviceb
+    build: .
+    image: serviceb
+    environment:
+      - VAULTTOKEN=$VAULTTOKEN
+      - VAULTSERVER=$VAULTSERVER
+    entrypoint: [ "python", "startup.py" ]
+    ports:
+      - "7000:7000"
+    networks:
+      - pocauth
