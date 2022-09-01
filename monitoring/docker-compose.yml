@@ -1,8 +1,8 @@
 version: '3'
 
 volumes:
-  prometheus_data: {}
-  grafana_data: {}
+  prometheus-data: {}
+  grafana-data: {}
 
 networks:
   pocauth:
@@ -18,7 +18,7 @@ services:
       - pocauth
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+      - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
@@ -33,10 +33,10 @@ services:
     volumes:
       - ./grafana_datasources.yml:/etc/grafana/provisioning/datasources/all.yaml
       - ./grafana_config.ini:/etc/grafana/config.ini
-      - grafana_data:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     ports:
       - "3030:3000"
-  
+    
   loki:
     image: grafana/loki
     container_name: loki

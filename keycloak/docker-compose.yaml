@@ -1,0 +1,46 @@
+version: "3.7"
+
+networks:
+  pocauth:
+    name: pocauth
+    driver: bridge
+    external: true
+
+volumes:
+  keycloak-data:
+
+services:
+  keycloak-database:
+    container_name: keycloak-database
+    image: postgres:9.6
+    volumes:
+      - keycloak-data:/var/lib/postgresql/data
+    networks:
+      - pocauth
+    ports:
+      - "25432:5432"
+    environment:
+      POSTGRES_DB: $KEYCLOAK_DB
+      POSTGRES_USER: $KEYCLOAK_DB_USER
+      POSTGRES_PASSWORD: $KEYCLOAK_DB_PWD
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:17.0.0
+    depends_on:
+      - keycloak-database
+    command: start-dev
+    networks:
+      - pocauth
+    ports:
+      - "8180:8080"
+    environment:
+      DB_VENDOR: $KEYCLOAK_DB_VENDOR
+      DB_ADDR: $KEYCLOAK_DB_ADDR
+      DB_PORT: 5432
+      DB_DATABASE: $KEYCLOAK_DB
+      DB_USER: $KEYCLOAK_DB_USER
+      DB_PASSWORD: $KEYCLOAK_DB_PWD
+      KEYCLOAK_ADMIN: $KEYCLOAK_USER
+      KEYCLOAK_ADMIN_PASSWORD: $KEYCLOAK_PASSWORD
+    restart: on-failure
