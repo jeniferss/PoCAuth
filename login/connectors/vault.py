@@ -8,8 +8,8 @@ credentials = {}
 
 
 def get_credentials(path: str, mountpoint: str):
-    token = os.getenv('VAULTTOKEN', 'root')
-    server = os.getenv('VAULTSERVER', 'http://localhost:8200')
+    token = os.getenv('VAULTTOKEN')
+    server = os.getenv('VAULTSERVER')
 
     if not token: raise EnvironmentError(f'VTOKEN not declared.')
     if not server: raise EnvironmentError(f'VSERVER not declared.')
