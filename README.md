@@ -83,7 +83,7 @@ $ cd auth-api
 $ docker-compose --env-file .env up --build
 ```
 
-### ServiceA & ServiceB
+### ServiceA & ServiceB $ Login Page
 ```bash
 # ServiceA will start at: http://localhost:5000
 $ cd serviceA
@@ -91,6 +91,10 @@ $ docker-compose up --build
 
 # ServiceB will start at: http://localhost:7000
 $ cd serviceB
+$ docker-compose --env-file .env up --build
+
+# Login Page will start at: http://localhost:7005
+$ cd login
 $ docker-compose --env-file .env up --build
 ```
 
