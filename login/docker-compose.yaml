@@ -1,0 +1,21 @@
+version: "3.7"
+
+networks:
+  pocauth:
+    name: pocauth
+    driver: bridge
+    external: true
+
+services: 
+  login:
+    container_name: login
+    build: .
+    image: login
+    environment:
+      - VAULTTOKEN=$VAULTTOKEN
+      - VAULTSERVER=$VAULTSERVER
+    ports:
+      - "5007:5007"
+    networks:
+      - pocauth
+  
