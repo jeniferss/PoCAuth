@@ -25,9 +25,12 @@ A list of technologies used within the project:
 * [Loki Image](https://hub.docker.com/r/grafana/loki): Latest Version
 * [Promtail Image](https://hub.docker.com/r/grafana/promtail): Latest Version
 * [Vault Image](https://hub.docker.com/_/vault): Latest Version
+* [Rabbitmq Image](https://hub.docker.com/_/rabbitmqt): Version 3-management-alpine
 * [Kong OIDC Plugin](https://github.com/nokia/kong-oidc)
 * [Lua Resty JWT Plugin](https://github.com/SkyLothar/lua-resty-jwt)
 * [Kong JWT Keycloak Plugin](https://github.com/BGaunitz/kong-plugin-jwt-keycloak)
+* [Apple Social Identity Provider for Keycloak](https://github.com/BenjaminFavre/keycloak-apple-social-identity-provider)
+* [Keycloak Event Listener Rabbitmq](https://github.com/aznamier/keycloak-event-listener-rabbitmq)
 
 
 ## Installation
@@ -50,6 +53,13 @@ $ cd kong
 $ docker-compose --env-file .env up --build
 ```
 
+### RabbitMQ
+```bash
+# Rabbit admin panel will start at: http://localhost:15672
+
+$ cd rabbitmq
+$ docker-compose up --build
+```
 ### Keycloak
 ```bash
 # Keycloak admin panel will start at: http://localhost:8180
