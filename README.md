@@ -28,6 +28,8 @@ A list of technologies used within the project:
 * [Kong OIDC Plugin](https://github.com/nokia/kong-oidc)
 * [Lua Resty JWT Plugin](https://github.com/SkyLothar/lua-resty-jwt)
 * [Kong JWT Keycloak Plugin](https://github.com/BGaunitz/kong-plugin-jwt-keycloak)
+* [Apple Social Identity Provider for Keycloak](https://github.com/BenjaminFavre/keycloak-apple-social-identity-provider)
+* [Keycloak Event Listener Rabbitmq](https://github.com/aznamier/keycloak-event-listener-rabbitmq)
 
 
 ## Installation
