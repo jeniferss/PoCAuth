@@ -8,8 +8,6 @@ networks:
 
 volumes:
   keycloak-data:
-  providers:
-
 
 services:
   keycloak-database:
