@@ -11,7 +11,7 @@ services:
     container_name: servicea
     build: .
     image: servicea
-    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 5000
+    entrypoint: [ "sh", "-c", "chmod +x ./startup.sh && source ./startup.sh"]
     ports:
       - "5000:5000"
     networks:

@@ -1,5 +1,7 @@
 FROM python:3.10-alpine
 
+RUN apk update && apk add curl && apk add jq && apk add sed
+
 WORKDIR /app
 COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
